@@ -20,23 +20,23 @@ namespace AasClientDemoForAjiya
             //ONE TIME CREATE ONLY
             var newAsset = await client.AssetApi.AddAsset(new AddAssetParam()
             {
-                Name = "TestClassroom",
+                Name = "[Test] STUDENT ASSET",
                 Description = "Final year students classroom",
                 Properties = new List<Property>()
                 {
                     new Property()
                     {
                         Id = Guid.NewGuid().ToString("N"),
-                        Name = "StudentName",
+                        Name = "Name",
                         Description = "Student name",
                         PropertyType = PropertyType.String
                     },
                     new Property()
                     {
                         Id = Guid.NewGuid().ToString("N"),
-                        Name = "StudentDOB",
-                        Description = "Date of birth of student",
-                        PropertyType = PropertyType.Datetime,
+                        Name = "Age",
+                        Description = "Age of student",
+                        PropertyType = PropertyType.Integer,
                     }
                 }
             });
@@ -50,10 +50,10 @@ namespace AasClientDemoForAjiya
             Console.Read();
 
             //Object created based on the properties defined previously.
-            var newObj = new
+            var newObj = new Student()
             {
-                StudentName = "Don",
-                StudentDob = DateTime.Now
+                Name = "Don",
+                Age = 21
             };
 
             //Saving to AAS. here we are adding it to the ID of the newly created asset above.
@@ -62,6 +62,19 @@ namespace AasClientDemoForAjiya
             Console.WriteLine("Newly Added Instance Data - ");
             Console.WriteLine(JsonConvert.SerializeObject(addInstanceData, Formatting.Indented));
 
+            //How to retrieve instance data added and cast it to a type defined.
+            var getInstance = await client.InstanceApi.GetAllInstances<Student>("IRAIHere");
+            foreach (var instanceData in getInstance)
+            {
+                Console.WriteLine($"The student name is {instanceData.Data.Name} and their age is {instanceData.Data.Age}");
+            }
+
+            //You can also save it to a list of your type by using the select function like this below.
+            List<Student> students = getInstance.Select(c => c.Data).ToList();
+            foreach (var student in students)
+            {
+                Console.WriteLine($"The student name is {student.Name} and their age is {student.Age}");
+            }
 
             Console.WriteLine("Press Enter to add user. This will create a new department, role and location.");
             Console.Read();
@@ -119,5 +132,11 @@ namespace AasClientDemoForAjiya
             Console.WriteLine("--- END ---");
             Console.Read();
         }
+    }
+
+    public class Student
+    {
+        public string Name { get; set; }
+        public int Age { get; set; }
     }
 }
