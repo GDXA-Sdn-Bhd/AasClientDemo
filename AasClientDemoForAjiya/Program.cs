@@ -20,20 +20,18 @@ namespace AasClientDemoForAjiya
             //ONE TIME CREATE ONLY
             var newAsset = await client.AssetApi.AddAsset(new AddAssetParam()
             {
-                Name = "[Test] STUDENT ASSET",
+                Name = "Student",
                 Description = "Final year students classroom",
                 Properties = new List<Property>()
                 {
                     new Property()
                     {
-                        Id = Guid.NewGuid().ToString("N"),
                         Name = "Name",
                         Description = "Student name",
                         PropertyType = PropertyType.String
                     },
                     new Property()
                     {
-                        Id = Guid.NewGuid().ToString("N"),
                         Name = "Age",
                         Description = "Age of student",
                         PropertyType = PropertyType.Integer,
@@ -104,7 +102,7 @@ namespace AasClientDemoForAjiya
                 Email = "email@example.com",
                 Username = "don",
                 LocationId = getLocation.FirstOrDefault()?.FullId,
-                Password = "NewPassWord123",
+                Password = "Abcd.12345",
                 PasswordPromptChange = false,
                 PhoneNumber = "0123456789",
                 Position = "Developer",
