@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AAS.Client;
+using AAS.Common.Aggregate.Filter.Factory;
+using AAS.Common.Aggregate.Stages;
 using AAS.Common.AssetModel;
 using AAS.Common.Identity;
 using AAS.Common.Parameters.MetadataParams;
@@ -16,7 +18,7 @@ namespace AasClientDemoForAjiya
         private static async Task Main(string[] args)
         {
             var client = new AasClient("InsertUrlOfAas", "InsertApiKey");
-
+            
             //ONE TIME CREATE ONLY
             var newAsset = await client.AssetApi.AddAsset(new AddAssetParam()
             {
@@ -55,13 +57,12 @@ namespace AasClientDemoForAjiya
             };
 
             //Saving to AAS. here we are adding it to the ID of the newly created asset above.
-            var addInstanceData = await client.InstanceApi.AddInstanceData(newAsset.Id, newObj,
-                Guid.NewGuid().ToString("N"));
+            var addInstanceData = await client.InstanceApi.AddInstanceData(newAsset.Id, newObj);
             Console.WriteLine("Newly Added Instance Data - ");
             Console.WriteLine(JsonConvert.SerializeObject(addInstanceData, Formatting.Indented));
 
             //How to retrieve instance data added and cast it to a type defined.
-            var getInstance = await client.InstanceApi.GetAllInstances<Student>("IRAIHere");
+            var getInstance = await client.InstanceApi.GetAllInstances<Student>("*Asset Id here*");
             foreach (var instanceData in getInstance)
             {
                 Console.WriteLine($"The student name is {instanceData.Data.Name} and their age is {instanceData.Data.Age}");
@@ -74,8 +75,22 @@ namespace AasClientDemoForAjiya
                 Console.WriteLine($"The student name is {student.Name} and their age is {student.Age}");
             }
 
+            //To create a filter to get the data we created previously
+            var stage = new MatchStage();
+            stage.AddFilter(StringFilter.Equal("Data.Name", "Don"));
+            stage.AddFilter(NumberFilter.Equal("Data.Age", 21));
+
+            var aggregate = await client.InstanceApi.AggregateInstanceData("Asset Id Here", stage);
+            foreach (var instanceData in aggregate)
+            {
+                Console.WriteLine("*******");
+                Console.WriteLine(instanceData.Data);
+            }
+
             Console.WriteLine("Press Enter to add user. This will create a new department, role and location.");
             Console.Read();
+
+
             // Creating a user requires a department, role and location to be created beforehand. 
             var newDept = await client.DepartmentApi.AddDepartment("IT Department", "Description for department");
             var newRole = await client.RoleApi.AddRole(new RoleParam()
