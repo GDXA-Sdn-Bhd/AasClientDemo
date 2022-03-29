@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AAS.Client" Version="2.4.8" />
+    <PackageReference Include="AAS.Client" Version="2.5.1" />
   </ItemGroup>
 
 </Project>
