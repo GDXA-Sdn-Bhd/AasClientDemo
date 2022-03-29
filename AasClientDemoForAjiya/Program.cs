@@ -18,7 +18,9 @@ namespace AasClientDemoForAjiya
         private static async Task Main(string[] args)
         {
             var client = new AasClient("InsertUrlOfAas", "InsertApiKey");
-            
+            RealTimeDemo.StartSignalR(client);
+            return;
+
             //ONE TIME CREATE ONLY
             var newAsset = await client.AssetApi.AddAsset(new AddAssetParam()
             {
