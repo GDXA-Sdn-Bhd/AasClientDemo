@@ -6,8 +6,10 @@ namespace AasClientDemoForAjiya
 {
     public class RealTimeDemo
     {
+        private static AasClient _client;
         public static void StartSignalR(AasClient aasClient)
         {
+            _client = aasClient;
             //1. Listen to events first.
             aasClient.RealTime.OnConnected += OnConnected;
             aasClient.RealTime.OnSubscribed += OnSubscribed;
@@ -24,12 +26,26 @@ namespace AasClientDemoForAjiya
 
         private static void OnUpdateInstanceData(RealTimeInstanceData obj)
         {
+            //Avoid processing updated instance data if this same program is the one who updated the instance.
+            if (obj.InstanceData.Source == _client.SourceId)
+            {
+                Console.WriteLine("Skipping self-updated instance data.");
+                return;
+            }
+
             //Process updated instance data here.
             Console.WriteLine(obj.InstanceData.Data.ToString());
         }
 
         private static void OnNewInstanceData(RealTimeInstanceData obj)
         {
+            //Avoid processing newly added instance data if this same program is the one who created the instance.
+            if (obj.InstanceData.Source == _client.SourceId)
+            {
+                Console.WriteLine("Skipping self-created instance data.");
+                return;
+            }
+
             //Process newly added instance data here.
             Console.WriteLine(obj.InstanceData.Data.ToString());
         }
